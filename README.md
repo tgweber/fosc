@@ -4,27 +4,27 @@ This is a python module to classify texts about research data products according
 Typical input for the classifier is the concatenated title, abstract and keywords of a 
 research data product.
 
-The classification support 20 classes:
-    * Mathematical Sciences,
-    * Physical Sciences,
-    * Chemical Sciences,
-    * Earth and Environmental Sciences,
-    * Biological Sciences,
-    * Agricultural and Veterinary Sciences,
-    * Information and Computing Sciences,
-    * Engineering and Technology,
-    * Medical and Health Sciences,
-    * Built Environment and Design,
-    * Education,
-    * Economics,
-    * Commerce, Management, Tourism and Services,
-    * Studies in Human Society,
-    * Psychology and Cognitive Sciences,
-    * Law and Legal Studies,
-    * Studies in Creative Arts and Writing,
-    * Language, Communication and Culture,
-    * History and Archaeology,
-    * Philosophy and Religious Studies
+The classification supports 20 classes:
+* Mathematical Sciences,
+* Physical Sciences,
+* Chemical Sciences,
+* Earth and Environmental Sciences,
+* Biological Sciences,
+* Agricultural and Veterinary Sciences,
+* Information and Computing Sciences,
+* Engineering and Technology,
+* Medical and Health Sciences,
+* Built Environment and Design,
+* Education,
+* Economics,
+* Commerce, Management, Tourism and Services,
+* Studies in Human Society,
+* Psychology and Cognitive Sciences,
+* Law and Legal Studies,
+* Studies in Creative Arts and Writing,
+* Language, Communication and Culture,
+* History and Archaeology,
+* Philosophy and Religious Studies
 
 The targed domain of this module is scientometric research (see [#models](model section) for details).
 
