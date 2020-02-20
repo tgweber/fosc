@@ -1,5 +1,3 @@
-init:
-	pip install -r requirements.txt
 setup-test:
 	pip install pytest
 	pip install pytest-cov

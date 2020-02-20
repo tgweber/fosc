@@ -57,7 +57,24 @@ model_id = "mlp_s"
 df = pd.DataFrame(
     [
         { "id": "Information and Computer Science Example",
-          "payload": "Automated classification of metadata of research data by their discipline(s) of research can be used in scientometric research, by repository service providers, and in the context of research data aggregation services. Openly available metadata of the DataCite index for research data were used to compile a large training and evaluation set comprised of 609,524 records, which is published alongside this paper. These data allow to reproducibly assess classification approaches, such as tree-based models and neural networks. According to our experiments with 20 base classes (multi-label classification), multi-layer perceptron models perform best with a f1-macro score of 0.760 closely followed by Long Short-Term Memory models (f1-macro score of 0.755). A possible application of the trained classification models is the quantitative analysis of trends towards interdisciplinarity of digital scholarly output or the characterization of growth patterns of research data, stratified by discipline of research. Both applications perform at scale with the proposed models which are available for re-use."
+          "payload": "Automated classification of metadata of research" \
+                     " data by their discipline(s) of research can be used" \
+                     " in scientometric research, by repository service providers," \
+                     " and in the context of research data aggregation services." \
+                     " Openly available metadata of the DataCite index for research"\
+                     " data were used to compile a large training and evaluation set" \
+                     " comprised of 609,524 records, which is published alongside this" \
+                     " paper. These data allow to reproducibly assess classification" \
+                     " approaches, such as tree-based models and neural networks." \
+                     " According to our experiments with 20 base classes (multi-label" \
+                     " classification), multi-layer perceptron models perform best with" \
+                     " a f1-macro score of 0.760 closely followed by Long Short-Term Memory" \
+                     " models (f1-macro score of 0.755). A possible application of the" \
+                     " trained classification models is the quantitative analysis of trends" \
+                     " towards interdisciplinarity of digital scholarly output or the" \
+                     " characterization of growth patterns of research data, stratified" \
+                     " by discipline of research. Both applications perform at scale with" \
+                     " the proposed models which are available for re-use."
          } 
     ]
 )
