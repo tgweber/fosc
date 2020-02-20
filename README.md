@@ -26,14 +26,17 @@ The classification supports 20 classes:
 * History and Archaeology,
 * Philosophy and Religious Studies
 
-The targed domain of this module is scientometric research (see [#models](model section) for details).
+These classes are very similar to the [ANZSRC (Australian and New Zealand Standard Research Classification)](https://www.abs.gov.au/ausstats/abs@.nsf/0/6BB427AB9696C225CA2574180004463E) classification,
+with two exceptions (see paper linked in [models section](#models) for details.
+
+The targed domain of this module is scientometric research (see [models section](#models) for details).
 
 # Quick Start
 
 Especially step 2 takes a lot of time (for just one classification).
 The main reason for this is the need to download the models and load models, weights, and vectorizer-objects into the RAM.
 
-Please make sure, that your machine is equipped with sufficient resources to load the model (see[#models](model section) for requirements of each model.
+Please make sure, that your machine is equipped with sufficient resources to load the model (see [models section](#models) for requirements of each model.
 
 Please be aware that by using this module, serialized code is loaded from zenodo and executed on
 your computer.
@@ -46,7 +49,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-2. Classify:
+2. Run classification:
 ```python
 import pandas as pd
 from fosc import load_model, vectorize
@@ -86,7 +89,8 @@ df.to_csv('predictions.csv')
 ```
 
 3. Use
-For a small sample only
+
+This is only to showcase (for small sample only)
 ```python
 def pretty_print(row):
     print("{}:".format(row["id"]))
@@ -290,15 +294,21 @@ The tests checks whether a download works (everytime) and loads the s-sized mode
 They therefore need time and sufficient RAM.
 
 # Update Policy
-If the models are re-trained on new data, this package will get an update. This happens on no regular schedule, since this project is currently not backed by an institution, but a private project. If you want to sponsor computing resources pleas feel free to reach out to the maintainer.
+If the models are re-trained on new data, this package will get an update. 
 
-# Contribute and Getting Help
-Please open tickets with enough information to reproduce possible problems.
+Old models will be kept on zenodo - so using older versions of this package will provide reproducible results.
+
+Updates do not happen on a regular schedule, since this project is currently not backed by an institution, but a private project.
+
+If you want to sponsor computing resources pleas feel free to reach out to the maintainer.
+
+# Contributions and Getting Help
+If you face problems, please open an issue with enough information to reproduce the problem.
 
 Gross misclassifications are very interesting for us; they can be included in the next training and evaluation round, which will lead to updated weights. Please include your payload and the expected results in an Issue.
 
-If you want to contribute by suggesting better paramters, please open a Pull-Request with a valid json file including the parameter value you can find in column params in [evaluation.csv](evaluation.csv). Include your reasoning, why these parameters may be better. 
+If you want to contribute by suggesting better paramters, please open a pull-request with a json file including the parameter values you can find in column params in [evaluation.csv](evaluation.csv). Include your reasoning, why these parameters may be better. 
 
-If you want to contribute by suggesting other models, please open an Issue with the model you proposeand reasons why this model may supersede the current performance stats (or the memory footprint).
+If you want to contribute by suggesting other models, please open an Issue with the model you propose and reasons why this model may supersede the current performance stats (or reduce the memory footprint while keeping the performance comparable).
 
 Please do not ask for support for scikit-learn or tensorflow installations, please consult the web instead. 
