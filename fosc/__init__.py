@@ -71,8 +71,6 @@ def vectorize(payload, model_id):
     something (TBA)
     """
     _download(model_id)
-    if model_id == "mlp_l" or model_id == "lstm_l":
-        raise NotImplementedError("{} is not supported (yet)")
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=FutureWarning)
         if config["models"][model_id]["type"] == "mlp":
