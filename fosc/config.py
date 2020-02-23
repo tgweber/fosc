@@ -22,7 +22,7 @@ config = {
          "mlp_l": {
             "id": "mlp_l",
             "type": "mlp",
-            "url": "tba"
+            "url": "https://zenodo.org/record/3685204/files/mlp_l.tar.gz"
         },
         "lstm_s": {
             "id": "lstm_s",
@@ -39,7 +39,7 @@ config = {
         "lstm_l": {
             "id": "lstm_l",
             "type": "lstm",
-            "url": "tba",
+            "url": "https://zenodo.org/record/3685208/files/lstm_l.tar.gz",
             "maxlen": 2000
         }
     },
