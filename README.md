@@ -113,10 +113,10 @@ The models are downloaded from [zenodo](https://zenodo.org):
 The following sections gives information what error is to be expected from the classification and how much RAM must be available for each model.
 
 All perfomance scores are rounded to two decimal positions. They have been calculated with the help of an evaluation set that was not part of the training set and consists of 61,359 records. They can therefore be used to estimate the error, when a model is used to make claims about a distribution:
-* _recall_ is the probability that all records of a class class have been classified so by the model. This value can be used to estimate the error of missed classifications (false negative) by multiplying (1-recall) with the number of classified records.
-* _precision_ is the probabiliy that all classifications of the model are correct (for a class). This value can be used to estimate the error of false classifications (false positive) by multiplying (1-precision) with the number of classified records. 
+* _recall_ is the probability that all records of a class class have been classified so by the model. This value can be used to estimate the error of missed classifications (false negative) by multiplying (1-recall) with the number of classified records. Adding this error from the number of predicted records is the upper bound of the predicted number of records.
+* _precision_ is the probabiliy that all classifications of the model are correct (for a class). This value can be used to estimate the error of false classifications (false positive) by multiplying (1-precision) with the number of classified records. Subtracting this error from the number of predicted records is the lower bound of the predicted number of records.
 
-Example: 20 records out of a set of texts have been classified with the model "mlp_s" as "Mathematical Science". The estimated error range would be 16 to 26 records.
+Example: 20 records out of a set of texts have been classified with the model "mlp_s" as "Mathematical Science". The estimated (rounded) error range would be 17 to 27 records.
 
 ## Small MLP
 Small means that 20.000 words from the vocabulary are used for the classification.
@@ -131,28 +131,28 @@ Approximately 2.7 GB of free RAM are necessary (for model, weights, and vectoriz
  
 |Field of Study                             |Recall|Precision|
 |-------------------------------------------|------|---------|
-|all (macro)                                |  0.68|     0.81|
-|all (micro)                                |  0.82|     0.85|
-|Mathematical Sciences                      |  0.67|     0.79|
-|Physical Sciences                          |  0.93|     0.96|
-|Chemical Sciences                          |  0.77|     0.82|
-|Earth and Environmental Sciences           |  0.75|     0.77|
+|all (macro)                                |  0.65|     0.83|
+|all (micro)                                |  0.81|     0.85|
+|Mathematical Sciences                      |  0.68|     0.77|
+|Physical Sciences                          |  0.92|     0.96|
+|Chemical Sciences                          |  0.79|     0.80|
+|Earth and Environmental Sciences           |  0.72|     0.81|
 |Biological Sciences                        |  0.90|     0.87|
-|Agricultural and Veterinary Sciences       |  0.49|     0.78|
-|Information and Computing Sciences         |  0.78|     0.79|
-|Engineering and Technology                 |  0.71|     0.79|
-|Medical and Health Sciences                |  0.78|     0.85|
-|Built Environment and Design               |  0.49|     0.79|
-|Education                                  |  0.62|     0.76|
-|Economics                                  |  0.63|     0.78|
-|Commerce, Management, Tourism and Services |  0.63|     0.66|
-|Studies in Human Society                   |  0.69|     0.75|
-|Psychology and Cognitive Sciences          |  0.77|     0.85|
-|Law and Legal Studies                      |  0.65|     0.86|
-|Studies in Creative Arts and Writing       |  0.60|     0.81|
-|Language, Communication and Culture        |  0.58|     0.87|
-|History and Archaeology                    |  0.73|     0.82|
-|Philosophy and Religious Studies           |  0.50|     0.82|
+|Agricultural and Veterinary Sciences       |  0.41|     0.80|
+|Information and Computing Sciences         |  0.75|     0.81|
+|Engineering and Technology                 |  0.66|     0.80|
+|Medical and Health Sciences                |  0.80|     0.83|
+|Built Environment and Design               |  0.44|     0.82|
+|Education                                  |  0.57|     0.82|
+|Economics                                  |  0.57|     0.79|
+|Commerce, Management, Tourism and Services |  0.54|     0.74|
+|Studies in Human Society                   |  0.64|     0.79|
+|Psychology and Cognitive Sciences          |  0.75|     0.86|
+|Law and Legal Studies                      |  0.61|     0.97|
+|Studies in Creative Arts and Writing       |  0.53|     0.88|
+|Language, Communication and Culture        |  0.58|     0.85|
+|History and Archaeology                    |  0.66|     0.83|
+|Philosophy and Religious Studies           |  0.45|     0.84|
 
 ## Medium MLP 
 Medium means that 50.000 words from the vocabulary are used for the classification.
@@ -164,6 +164,7 @@ This model can be used for machines with restricted resources, if feasible, cons
 Approximately 3.5 GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
+
 |Field of Study                             |Recall|Precision|
 |-------------------------------------------|------|---------|
 |all (macro)                                |  0.70|     0.82|
@@ -200,7 +201,31 @@ using the medium version or the lstm versions (worse performance, but smaller me
 Approximately x.y GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
-tba 
+
+|Field of Study                             |Recall|Precision|
+|-------------------------------------------|------|---------|
+|all (macro)                                |  0.66|     0.85|
+|all (micro)                                |  0.83|     0.87|
+|Mathematical Sciences                      |  0.72|     0.80|
+|Physical Sciences                          |  0.93|     0.97|
+|Chemical Sciences                          |  0.82|     0.82|
+|Earth and Environmental Sciences           |  0.78|     0.80|
+|Biological Sciences                        |  0.90|     0.88|
+|Agricultural and Veterinary Sciences       |  0.40|     0.86|
+|Information and Computing Sciences         |  0.78|     0.82|
+|Engineering and Technology                 |  0.72|     0.79|
+|Medical and Health Sciences                |  0.83|     0.85|
+|Built Environment and Design               |  0.58|     0.83|
+|Education                                  |  0.61|     0.84|
+|Economics                                  |  0.60|     0.79|
+|Commerce, Management, Tourism and Services |  0.51|     0.80|
+|Studies in Human Society                   |  0.63|     0.84|
+|Psychology and Cognitive Sciences          |  0.77|     0.87|
+|Law and Legal Studies                      |  0.53|     0.93|
+|Studies in Creative Arts and Writing       |  0.52|     0.93|
+|Language, Communication and Culture        |  0.62|     0.84|
+|History and Archaeology                    |  0.61|     0.88|
+|Philosophy and Religious Studies           |  0.44|     0.88|
 
 ## Small LSTM
 Small means that up to the first 500 words of the payload are used for the classification.
@@ -212,7 +237,7 @@ This model is not really meant for production usage, it is the smallest version 
 Approximately 2.3 GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
-lstm_s:
+
 |Field of Study                             |Recall|Precision|
 |-------------------------------------------|------|---------|
 |all (macro)                                |  0.68|     0.81|
@@ -248,6 +273,7 @@ This model can be used for machines with restricted resources, if feasible, cons
 Approximately 2.3 GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
+
 |Field of Study                             |Recall|Precision|
 |-------------------------------------------|------|---------|
 |all (macro)                                |  0.60|     0.82|
@@ -283,6 +309,31 @@ This model can be used for machines with restricted resources, if feasible, cons
 Approximately x.y GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
+
+|Field of Study                             |Recall|Precision|
+|-------------------------------------------|------|---------|
+|all (macro)                                |  0.62|     0.82|
+|all (micro)                                |  0.76|     0.85|
+|Mathematical Sciences                      |  0.57|     0.76|
+|Physical Sciences                          |  0.89|     0.97|
+|Chemical Sciences                          |  0.63|     0.84|
+|Earth and Environmental Sciences           |  0.60|     0.81|
+|Biological Sciences                        |  0.90|     0.84|
+|Agricultural and Veterinary Sciences       |  0.43|     0.73|
+|Information and Computing Sciences         |  0.64|     0.81|
+|Engineering and Technology                 |  0.68|     0.79|
+|Medical and Health Sciences                |  0.77|     0.83|
+|Built Environment and Design               |  0.48|     0.83|
+|Education                                  |  0.63|     0.82|
+|Economics                                  |  0.53|     0.80|
+|Commerce, Management, Tourism and Services |  0.50|     0.71|
+|Studies in Human Society                   |  0.63|     0.83|
+|Psychology and Cognitive Sciences          |  0.77|     0.82|
+|Law and Legal Studies                      |  0.55|     0.89|
+|Studies in Creative Arts and Writing       |  0.54|     0.83|
+|Language, Communication and Culture        |  0.62|     0.80|
+|History and Archaeology                    |  0.61|     0.83|
+|Philosophy and Religious Studies           |  0.47|     0.82|
 tba
 
 # Run Test
