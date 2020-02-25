@@ -39,7 +39,7 @@ config = {
         "lstm_l": {
             "id": "lstm_l",
             "type": "lstm",
-            "url": "https://zenodo.org/record/3685208/files/lstm_l.tar.gz",
+            "url": "https://zenodo.org/record/3686511/files/lstm_l.tar.gz",
             "maxlen": 2000
         }
     },
