@@ -22,7 +22,7 @@ config = {
          "mlp_l": {
             "id": "mlp_l",
             "type": "mlp",
-            "url": "https://zenodo.org/record/3685204/files/mlp_l.tar.gz"
+            "url": "https://zenodo.org/record/3686547/files/mlp_l.tar.gz"
         },
         "lstm_s": {
             "id": "lstm_s",
