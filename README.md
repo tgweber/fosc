@@ -161,7 +161,7 @@ Medium means that 50.000 words from the vocabulary are used for the classificati
 This model can be used for machines with restricted resources, if feasible, consider using the large mlp.
 
 ### Requirements
-Approximately 3.5 GB of free RAM are necessary (for model, weights, and vectorizing objects).
+Approximately 3.2 GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
 
@@ -198,7 +198,7 @@ This model can be used for the best performance, if resources are restricted, co
 using the medium version or the lstm versions (worse performance, but smaller memory footprint).
 
 ### Requirements
-Approximately x.y GB of free RAM are necessary (for model, weights, and vectorizing objects).
+Approximately 3.4 GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
 
@@ -306,7 +306,7 @@ Large means that up to the first 2000 words of the payload are used for the clas
 This model can be used for machines with restricted resources, if feasible, consider using the mlp models. 
 
 ### Requirements
-Approximately x.y GB of free RAM are necessary (for model, weights, and vectorizing objects).
+Approximately 2.4 GB of free RAM are necessary (for model, weights, and vectorizing objects).
 
 ### Performance
 
@@ -334,7 +334,6 @@ Approximately x.y GB of free RAM are necessary (for model, weights, and vectoriz
 |Language, Communication and Culture        |  0.62|     0.80|
 |History and Archaeology                    |  0.61|     0.83|
 |Philosophy and Religious Studies           |  0.47|     0.82|
-tba
 
 # Run Test
 ```bash
