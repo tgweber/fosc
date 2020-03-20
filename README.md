@@ -5,25 +5,25 @@ Typical input for the classifier is the concatenated title, abstract and keyword
 research data product.
 
 The classification supports 20 classes:
-* Mathematical Sciences,
-* Physical Sciences,
-* Chemical Sciences,
-* Earth and Environmental Sciences,
-* Biological Sciences,
-* Agricultural and Veterinary Sciences,
-* Information and Computing Sciences,
-* Engineering and Technology,
-* Medical and Health Sciences,
-* Built Environment and Design,
-* Education,
-* Economics,
-* Commerce, Management, Tourism and Services,
-* Studies in Human Society,
-* Psychology and Cognitive Sciences,
-* Law and Legal Studies,
-* Studies in Creative Arts and Writing,
-* Language, Communication and Culture,
-* History and Archaeology,
+* Mathematical Sciences
+* Physical Sciences
+* Chemical Sciences
+* Earth and Environmental Sciences
+* Biological Sciences
+* Agricultural and Veterinary Sciences
+* Information and Computing Sciences
+* Engineering and Technology
+* Medical and Health Sciences
+* Built Environment and Design
+* Education
+* Economics
+* Commerce, Management, Tourism and Services
+* Studies in Human Society
+* Psychology and Cognitive Sciences
+* Law and Legal Studies
+* Studies in Creative Arts and Writing
+* Language, Communication and Culture
+* History and Archaeology
 * Philosophy and Religious Studies
 
 These classes are very similar to the [ANZSRC (Australian and New Zealand Standard Research Classification)](https://www.abs.gov.au/ausstats/abs@.nsf/0/6BB427AB9696C225CA2574180004463E) classification,
@@ -84,7 +84,7 @@ df = pd.DataFrame(
 model = load_model(model_id)
 vectorized = vectorize(df.payload, model_id)
 preds = pd.DataFrame(model.predict(vectorized))
-df = df.join(preds)```
+df = df.join(preds)
 df.to_csv('predictions.csv')
 ```
 
@@ -98,6 +98,31 @@ def pretty_print(row):
         print("\t{:05.2f}: {}".format(round(row[i]*100,3), config["labels"][i]))
 df.apply(pretty_print, axis=1)
 ```
+
+# Batch Processing
+
+For a large set of payloads the approach sketched [in the previous section](#quick-start) is too inefficient, since large python objects are loaded from disk on every call of vectorize(). The follwing code sinppet is a possible way to chunk the payload and process each batch using the mlp\*-classifiers without said penalty:
+
+```python
+import numpy as np
+import pandas as pd
+from fosc import load_model, get_vectorizer, get_selector
+
+model_id = "mlp_s"
+
+vectorizer = get_vectorizer(model_id)
+selector = get_selector(model_id)
+model = load_model(model_id)
+
+# you need to implement get_batch()
+# batch is a pandas DataFrame with the layout sketched in the previous section 
+for batch in get_batch():
+    vec_batch = selector.transform(vectorizer.transform(batch.payload)).astype(np.float64)
+    batch.join(pd.DataFrame(model.predict(vec_batch)))
+    # do something with batch (save it, etc.)
+```
+
+If you want to use lstm-models, check out the source of the vectorize()-function and adapt this example accordingly (with tokenizer and emb_matrix, instead of vectorizer and selector).
 
 # Models
 The creation and evaluation procedure for the models are explained in a [paper](https://arxiv.org/abs/1910.09313).

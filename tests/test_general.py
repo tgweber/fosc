@@ -7,7 +7,14 @@
 #
 ################################################################################
 
-from fosc import load_model, vectorize, _tf_shutup
+from fosc import \
+        _tf_shutup, \
+        get_emb_matrix, \
+        get_selector, \
+        get_tokenizer, \
+        get_vectorizer, \
+        load_model, \
+        vectorize
 from fosc.config import config
 
 import numpy as np
@@ -15,6 +22,8 @@ import os
 import pandas as pd
 from scipy.sparse.csr import csr_matrix
 import shutil
+import pytest
+
 # This is how you import tensorflow stuff without the annoying output
 # Thanks to https://stackoverflow.com/a/54950981
 _tf_shutup()
@@ -51,5 +60,18 @@ def test_vectorize():
     assert isinstance(vectorized, csr_matrix)
 
     vectorized = vectorize(texts, "lstm_s")
-    print(type(vectorized))
     assert isinstance(vectorized, np.ndarray)
+
+def test_exceptions():
+    with pytest.raises(ValueError) as ve:
+        vectorizer = get_vectorizer("lstm_s")
+        assert str(ve) == "lstm_s has no vectorizer"
+    with pytest.raises(ValueError) as ve:
+        selector = get_selector("lstm_s")
+        assert str(ve) == "lstm_s has no selector"
+    with pytest.raises(ValueError) as ve:
+        tokenizer = get_tokenizer("mlp_s")
+        assert str(ve) == "mlp_s has no tokenizer"
+    with pytest.raises(ValueError) as ve:
+        emb_matrix = get_emb_matrix("mlp_s")
+        assert str(ve) == "mlp_s has no emb_matrix"

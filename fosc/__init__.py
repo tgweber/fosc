@@ -17,7 +17,7 @@ import tarfile
 import urllib.request
 import warnings
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 # We silence tensorflow output before we load it
 # https://stackoverflow.com/a/54950981
@@ -74,15 +74,12 @@ def vectorize(payload, model_id):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=FutureWarning)
         if config["models"][model_id]["type"] == "mlp":
-            with open(os.path.join(config["base_path"], model_id, "vectorizer.bin"), "rb") as f:
-                vectorizer = pickle.load(f)
-            with open(os.path.join(config["base_path"], model_id,"selector.bin"), "rb") as f:
-                selector = pickle.load(f)
+            vectorizer = get_vectorizer(model_id)
+            selector = get_selector(model_id)
             return selector.transform(vectorizer.transform(payload)).astype(np.float64)
         elif config["models"][model_id]["type"] == "lstm":
-            with open(os.path.join(config["base_path"], model_id, "tokenizer.bin"), "rb") as f:
-                tokenizer = pickle.load(f)
-            emb_matrix = np.load(os.path.join(config["base_path"], model_id, "emb_matrix.npy"))
+            tokenizer = get_tokenizer(model_id)
+            emb_matrix = get_emb_matrix(model_id)
             return pad_sequences(
                 tokenizer.texts_to_sequences(payload),
                 maxlen=config["models"][model_id]["maxlen"]
@@ -106,3 +103,82 @@ def _download(model_id):
         tar.extractall(path=config["base_path"])
         tar.close()
         os.remove(target_path_archive)
+
+def get_vectorizer(model_id):
+    """ Returns the vectorizer object for the given model_id
+
+    This function is meant for large classification runs, when the payloads are
+    chunked into batches (vectorize()) always loads vectorizer from disk and is
+    therefore slow when iteratively called.
+
+    Argument
+    --------
+    model_id: str
+        One of mlp_s, mlp_m, mlp_l
+        Consult README.md for details on the models
+    """
+    _download(model_id)
+    if config["models"][model_id]["type"] == "mlp":
+        with open(os.path.join(config["base_path"], model_id, "vectorizer.bin"), "rb") as f:
+            return pickle.load(f)
+    else:
+        raise ValueError("{} has no vectorizer".format(model_id))
+
+def get_selector(model_id):
+    """ Returns the selector object for the given model_id
+
+    This function is meant for large classification runs, when the payloads are
+    chunked into batches (vectorize()) always loads selector from disk and is
+    therefore slow when iteratively called.
+
+    Argument
+    --------
+    model_id: str
+        One of mlp_s, mlp_m, mlp_l
+        Consult README.md for details on the models
+    """
+    _download(model_id)
+    if config["models"][model_id]["type"] == "mlp":
+        with open(os.path.join(config["base_path"], model_id, "selector.bin"), "rb") as f:
+            return pickle.load(f)
+    else:
+        raise ValueError("{} has no selector".format(model_id))
+
+def get_tokenizer(model_id):
+    """ Returns the tokenizer object for the given model_id
+
+    This function is meant for large classification runs, when the payloads are
+    chunked into batches (vectorize()) always loads tokenizer from disk and is
+    therefore slow when iteratively called.
+
+    Argument
+    --------
+    model_id: str
+        One of lstm_s, lstm_m, lstm_m
+        Consult README.md for details on the models
+    """
+    _download(model_id)
+    if config["models"][model_id]["type"] == "lstm":
+        with open(os.path.join(config["base_path"], model_id, "tokenizer.bin"), "rb") as f:
+            return pickle.load(f)
+    else:
+        raise ValueError("{} has no tokenizer".format(model_id))
+
+def get_emb_matrix(model_id):
+    """ Returns the emb_matrix object for the given model_id
+
+    This function is meant for large classification runs, when the payloads are
+    chunked into batches (vectorize()) always loads emb_matrix from disk and is
+    therefore slow when iteratively called.
+
+    Argument
+    --------
+    model_id: str
+        One of lstm_s, lstm_m, lstm_m
+        Consult README.md for details on the models
+    """
+    _download(model_id)
+    if config["models"][model_id]["type"] == "lstm":
+        return np.load(os.path.join(config["base_path"], model_id, "emb_matrix.npy"))
+    else:
+        raise ValueError("{} has no emb_matrix".format(model_id))
