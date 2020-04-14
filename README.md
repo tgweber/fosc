@@ -33,8 +33,10 @@ The targed domain of this module is scientometric research (see [models section]
 
 # Quick Start
 
+Before starting, please note that the classifier has been trained with Enlgish samples and it will not work with other languages.
+
 Especially step 2 takes a lot of time (for just one classification).
-The main reason for this is the need to download the models and load models, weights, and vectorizer-objects into the RAM.
+The main reason for this is the need to download the models and load models, weights, and vectorizer-objects into the RAM. These are downloaded in the current working directory. Nonetheless, you can download the required ones in advance and specify their location in the [config.py base_path](https://github.com/ppanero/fosc/blob/master/fosc/config.py#L10) variable.
 
 Please make sure, that your machine is equipped with sufficient resources to load the model (see [models section](#models) for requirements of each model.
 
@@ -123,6 +125,8 @@ for batch in get_batch():
 ```
 
 If you want to use lstm-models, check out the source of the vectorize()-function and adapt this example accordingly (with tokenizer and emb_matrix, instead of vectorizer and selector).
+
+Note that the whole processed dataset is joined altogether again. This means that if you are saving it (e.g. to csv file) it could end up in a heavy file. An alternative would be to save each batch to a different file (e.g. marking with a timestamp). In addition, using this method only one batch would be in memory at a time reducing its consumption.
 
 # Models
 The creation and evaluation procedure for the models are explained in a [paper](https://arxiv.org/abs/1910.09313).
