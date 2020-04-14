@@ -33,10 +33,10 @@ The targed domain of this module is scientometric research (see [models section]
 
 # Quick Start
 
-Before starting, please note that the classifier has been trained with Enlgish samples and it will not work with other languages.
+Before starting, please note that the classifier has been trained with English samples and it will not work with other languages.
 
 Especially step 2 takes a lot of time (for just one classification).
-The main reason for this is the need to download the models and load models, weights, and vectorizer-objects into the RAM. These are downloaded in the current working directory. Nonetheless, you can download the required ones in advance and specify their location in the [config.py base_path](https://github.com/ppanero/fosc/blob/master/fosc/config.py#L10) variable.
+The main reason for this is the need to download the models and load models, weights, and vectorizer-objects into the RAM. These are downloaded in the current working directory. Nonetheless, you can download the required ones in advance and specify their location in the [config.py base_path](fosc/config.py#L10) variable.
 
 Please make sure, that your machine is equipped with sufficient resources to load the model (see [models section](#models) for requirements of each model.
 
