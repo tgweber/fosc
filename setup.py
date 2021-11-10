@@ -17,7 +17,7 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests')),
     install_requires=[
-        "tensorflow==2.5.0",
+        "tensorflow==2.5.2",
         "keras",
         "pandas",
         "scikit-learn==0.21.3"
