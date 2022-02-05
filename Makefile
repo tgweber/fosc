@@ -1,6 +1,5 @@
 setup-test:
-	pip install pytest
-	pip install pytest-cov
+	pip install -r requirements-dev.txt
 test:
 	python setup.py develop
 	pytest --cov=fosc --cov-report html

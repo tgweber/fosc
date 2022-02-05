@@ -30,8 +30,8 @@ _tf_shutup()
 import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
-    from tensorflow.python.keras.engine.sequential import Sequential
-    from tensorflow.python.keras.engine.training import Model
+    from keras.engine.sequential import Sequential
+    from keras.engine.training import Model
 
 def test_config():
     assert "models" in config.keys()
@@ -46,9 +46,9 @@ def test_config():
             assert "maxlen" in config["models"][model_id].keys()
 
 def test_load_model():
-    should_be_removed_for_coverage = os.path.join(config["base_path"], "mlp_s")
-    if os.path.isdir(should_be_removed_for_coverage):
-        shutil.rmtree(should_be_removed_for_coverage)
+    # should_be_removed_for_coverage = os.path.join(config["base_path"], "mlp_s")
+    # if os.path.isdir(should_be_removed_for_coverage):
+    #    shutil.rmtree(should_be_removed_for_coverage)
     model = load_model("mlp_s")
     assert isinstance(model, Sequential)
     model = load_model("lstm_s")
