@@ -28,7 +28,7 @@ _tf_shutup()
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     import tensorflow as tf
-    from keras.preprocessing.sequence import pad_sequences
+    from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from fosc.config import config
 
