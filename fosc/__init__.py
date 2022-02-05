@@ -76,7 +76,7 @@ def vectorize(payload, model_id):
         if config["models"][model_id]["type"] == "mlp":
             vectorizer = get_vectorizer(model_id)
             selector = get_selector(model_id)
-            return selector.transform(vectorizer.transform(payload)).astype(np.float64)
+            return selector.transform(vectorizer.transform(payload)).astype(float).sorted_indices()
         elif config["models"][model_id]["type"] == "lstm":
             tokenizer = get_tokenizer(model_id)
             emb_matrix = get_emb_matrix(model_id)
