@@ -19,6 +19,7 @@ setup(
     install_requires=[
         "tensorflow==2.8.1",
         "keras",
+        "numpy",
         "pandas",
         "scikit-learn==0.21.3"
     ]
