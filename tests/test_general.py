@@ -20,7 +20,7 @@ from fosc.config import config
 import numpy as np
 import os
 import pandas as pd
-from scipy.sparse.csr import csr_matrix
+from scipy.sparse import csr_matrix
 import shutil
 import pytest
 
