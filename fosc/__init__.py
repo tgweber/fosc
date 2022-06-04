@@ -43,8 +43,6 @@ class FOSCEncoder(json.JSONEncoder):
             return float(obj)
         if isinstance(obj, np.ndarray):
             return obj.tolist()
-        if isinstance(obj, type):
-            return str(type(obj))
         return super(FOSCEncoder, self).default(obj)
 
 
@@ -55,7 +53,9 @@ def dump_vectorizer_to_dir(vectorizer, path):
     with open(vocabulary_file, "w") as fp:
         json.dump(vectorizer.vocabulary_, fp, cls=FOSCEncoder)
     params_file = os.path.join(path, "params.json")
-    non_default_params = {}
+    non_default_params = {
+        "__sklearn_version__": sklearn.__version__
+    }
     # get non-default values:
     vectorizer_inspect = \
         inspect.getfullargspec(sklearn.feature_extraction.text.TfidfVectorizer)
@@ -64,7 +64,6 @@ def dump_vectorizer_to_dir(vectorizer, path):
             continue
         if vectorizer_inspect.defaults[i-1] != vectorizer.get_params()[key]:
             non_default_params[key] = vectorizer.get_params()[key]
-    # TODO add version
     with open(params_file, "w") as fp:
         json.dump(non_default_params, fp, cls=FOSCEncoder)
 
@@ -74,6 +73,19 @@ def load_vectorizer_from_dir(path):
     params_file = os.path.join(path, "params.json")
     with open(params_file, "r") as fp:
         params = json.load(fp)
+    sklearn_version = params.pop("__sklearn_version__", "0")
+    if sklearn_version != sklearn.__version__:
+        logging.warning("The version of sklearn used to create the"
+                        " loaded vectorizer {}"
+                        " is different from the"
+                        " currently used sklearn {}."
+                        " Please consult the documentations of both"
+                        " versions to determine breaking changes or"
+                        " differing default values".format(
+                            sklearn_version,
+                            sklearn.__version__
+                        )
+       )
     vectorizer.set_params(**params)
     idf_file = os.path.join(path, "idf.csv")
     vectorizer.idf_ = np.loadtxt(idf_file)
