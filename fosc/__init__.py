@@ -24,13 +24,44 @@ __version__ = "0.0.2"
 def _tf_shutup():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     logging.getLogger('tensorflow').setLevel(logging.FATAL)
+
 _tf_shutup()
+
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     import tensorflow as tf
     from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from fosc.config import config
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
+
+
+def dump_vectorizer_to_dir(vectorizer, path):
+    idf_file = os.path.join(path, "idf.csv")
+    np.savetxt(idf_file, vectorizer.idf_, delimiter=",")
+    vocabulary_file = os.path.join(path, "vocabulary.json")
+    with open(vocabulary_file, "w") as fp:
+        json.dump(vectorizer.vocabulary_, fp, cls=NpEncoder)
+
+
+def load_vectorizer_from_dir(path):
+    vectorizer = sklearn.feature_extraction.text.TfidfVectorizer()
+    idf_file = os.path.join(path, "idf.csv")
+    vectorizer.idf_ = np.loadtxt(idf_file)
+    vocabulary_file = os.path.join(path, "vocabulary.json")
+    with open(vocabulary_file, "r") as fp:
+        vectorizer.vocabulary_ = json.load(fp)
+    return vectorizer
+
 
 def load_model(model_id):
     """ Loads the model. Downloads the model if not present on local drive

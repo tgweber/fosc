@@ -3,7 +3,7 @@
 #
 # Apache 2.0 License
 #
-# This file contains all RDP-related tests
+# This file contains all usage-related tests
 #
 ################################################################################
 
