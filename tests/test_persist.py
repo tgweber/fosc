@@ -21,7 +21,7 @@ def test_store_and_load_vectorizer(tmpdir):
      'And this is the third one.',
      'Is this the first document?',
     ]
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(stop_words=["This"], norm="l1")
     vectorizer.fit(corpus)
 
     vectorizer_dump_dir = tmpdir.mkdir("test-vectorizer").realpath()

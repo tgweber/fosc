@@ -7,6 +7,7 @@
 #
 ################################################################################
 
+import inspect
 import json
 import logging
 import numpy as np
@@ -34,7 +35,7 @@ with warnings.catch_warnings():
 
 from fosc.config import config
 
-class NpEncoder(json.JSONEncoder):
+class FOSCEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
             return int(obj)
@@ -42,7 +43,9 @@ class NpEncoder(json.JSONEncoder):
             return float(obj)
         if isinstance(obj, np.ndarray):
             return obj.tolist()
-        return super(NpEncoder, self).default(obj)
+        if isinstance(obj, type):
+            return str(type(obj))
+        return super(FOSCEncoder, self).default(obj)
 
 
 def dump_vectorizer_to_dir(vectorizer, path):
@@ -50,11 +53,28 @@ def dump_vectorizer_to_dir(vectorizer, path):
     np.savetxt(idf_file, vectorizer.idf_, delimiter=",")
     vocabulary_file = os.path.join(path, "vocabulary.json")
     with open(vocabulary_file, "w") as fp:
-        json.dump(vectorizer.vocabulary_, fp, cls=NpEncoder)
+        json.dump(vectorizer.vocabulary_, fp, cls=FOSCEncoder)
+    params_file = os.path.join(path, "params.json")
+    non_default_params = {}
+    # get non-default values:
+    vectorizer_inspect = \
+        inspect.getfullargspec(sklearn.feature_extraction.text.TfidfVectorizer)
+    for i, key in enumerate(vectorizer_inspect.args):
+        if  i == 0:
+            continue
+        if vectorizer_inspect.defaults[i-1] != vectorizer.get_params()[key]:
+            non_default_params[key] = vectorizer.get_params()[key]
+    # TODO add version
+    with open(params_file, "w") as fp:
+        json.dump(non_default_params, fp, cls=FOSCEncoder)
 
 
 def load_vectorizer_from_dir(path):
     vectorizer = sklearn.feature_extraction.text.TfidfVectorizer()
+    params_file = os.path.join(path, "params.json")
+    with open(params_file, "r") as fp:
+        params = json.load(fp)
+    vectorizer.set_params(**params)
     idf_file = os.path.join(path, "idf.csv")
     vectorizer.idf_ = np.loadtxt(idf_file)
     vocabulary_file = os.path.join(path, "vocabulary.json")
