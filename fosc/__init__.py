@@ -59,44 +59,47 @@ def load_dict_from_compressed_json(path):
     with gzip.open(path) as fp:
         return json.loads(fp.read().decode("utf-8"))
 
-def dump_vectorizer_to_dir(vectorizer, path):
-    idf_file = os.path.join(path, IDF_FILENAME)
-    np.savez_compressed(idf_file, vectorizer.idf_)
-    vocabulary_file = os.path.join(path, VOCABULARY_FILENAME)
-    dump_dict_to_compressed_json(vectorizer.vocabulary_, vocabulary_file)
-
+def get_params_with_non_default_values(obj):
     non_default_params = {
         "__sklearn_version__": sklearn.__version__
     }
-    # get non-default values:
-    vectorizer_inspect = \
-        inspect.getfullargspec(sklearn.feature_extraction.text.TfidfVectorizer)
+    cls_inspect = inspect.getfullargspec(type(obj))
     # inspect changed the output of getfullargsspec somewhere.
     # We define the new output format as standard and try the old one
     # if nothing can be found.
     args_index = 4
     default_index = 5
     access_by_key = True
-    if len(vectorizer_inspect[args_index]) == 0:
+    if len(cls_inspect[args_index]) == 0:
         args_index = 0
         default_index = 3
         access_by_key = False
-    for i, key in enumerate(vectorizer_inspect[args_index]):
+    for i, key in enumerate(cls_inspect[args_index]):
         if  i == 0:
             continue
         if access_by_key:
-            default_value = vectorizer_inspect[default_index][key]
+            default_value = cls_inspect[default_index][key]
         else:
-            default_value = vectorizer_inspect[default_index][i-1]
+            default_value = cls_inspect[default_index][i-1]
         print("{}: {} (model) {} (default)".format(
             key,
-            vectorizer.get_params()[key],
+            obj.get_params()[key],
             default_value
         ))
-        if default_value != vectorizer.get_params()[key]:
-            non_default_params[key] = vectorizer.get_params()[key]
+        if default_value != obj.get_params()[key]:
+            non_default_params[key] = obj.get_params()[key]
+    return non_default_params
+
+def dump_vectorizer_to_dir(vectorizer, path):
+    idf_file = os.path.join(path, IDF_FILENAME)
+    np.savez_compressed(idf_file, vectorizer.idf_)
+    vocabulary_file = os.path.join(path, VOCABULARY_FILENAME)
+    dump_dict_to_compressed_json(vectorizer.vocabulary_, vocabulary_file)
+    params_with_non_default_values = get_params_with_non_default_values(
+        vectorizer
+    )
     params_file = os.path.join(path, PARAMS_FILENAME)
-    dump_dict_to_compressed_json(non_default_params, params_file)
+    dump_dict_to_compressed_json(params_with_non_default_values, params_file)
 
 
 def load_vectorizer_from_dir(path):
