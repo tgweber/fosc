@@ -7,6 +7,7 @@
 #
 ################################################################################
 
+import gzip
 import inspect
 import json
 import logging
@@ -46,14 +47,24 @@ class FOSCEncoder(json.JSONEncoder):
         return super(FOSCEncoder, self).default(obj)
 
 IDF_FILENAME = "idf.npz"
+VOCABULARY_FILENAME = "vocabulary.json.gz"
+PARAMS_FILENAME = "params.json.gz"
+
+def dump_dict_to_compressed_json(d, path):
+    payload = gzip.compress(json.dumps(d, cls=FOSCEncoder).encode("utf-8"))
+    with open(path, "wb") as fp:
+        fp.write(payload)
+
+def load_dict_from_compressed_json(path):
+    with gzip.open(path) as fp:
+        return json.loads(fp.read().decode("utf-8"))
 
 def dump_vectorizer_to_dir(vectorizer, path):
     idf_file = os.path.join(path, IDF_FILENAME)
     np.savez_compressed(idf_file, vectorizer.idf_)
-    vocabulary_file = os.path.join(path, "vocabulary.json")
-    with open(vocabulary_file, "w") as fp:
-        json.dump(vectorizer.vocabulary_, fp, cls=FOSCEncoder)
-    params_file = os.path.join(path, "params.json")
+    vocabulary_file = os.path.join(path, VOCABULARY_FILENAME)
+    dump_dict_to_compressed_json(vectorizer.vocabulary_, vocabulary_file)
+
     non_default_params = {
         "__sklearn_version__": sklearn.__version__
     }
@@ -84,15 +95,14 @@ def dump_vectorizer_to_dir(vectorizer, path):
         ))
         if default_value != vectorizer.get_params()[key]:
             non_default_params[key] = vectorizer.get_params()[key]
-    with open(params_file, "w") as fp:
-        json.dump(non_default_params, fp, cls=FOSCEncoder)
+    params_file = os.path.join(path, PARAMS_FILENAME)
+    dump_dict_to_compressed_json(non_default_params, params_file)
 
 
 def load_vectorizer_from_dir(path):
     vectorizer = sklearn.feature_extraction.text.TfidfVectorizer()
-    params_file = os.path.join(path, "params.json")
-    with open(params_file, "r") as fp:
-        params = json.load(fp)
+    params_file = os.path.join(path, PARAMS_FILENAME)
+    params = load_dict_from_compressed_json(params_file)
     sklearn_version = params.pop("__sklearn_version__", "0")
     if sklearn_version != sklearn.__version__:
         logging.warning("The version of sklearn used to create the"
@@ -109,9 +119,8 @@ def load_vectorizer_from_dir(path):
     vectorizer.set_params(**params)
     idf_file = os.path.join(path, IDF_FILENAME)
     vectorizer.idf_ = np.load(idf_file, allow_pickle=False)["arr_0"]
-    vocabulary_file = os.path.join(path, "vocabulary.json")
-    with open(vocabulary_file, "r") as fp:
-        vectorizer.vocabulary_ = json.load(fp)
+    vocabulary_file = os.path.join(path, VOCABULARY_FILENAME)
+    vectorizer.vocabulary_ = load_dict_from_compressed_json(vocabulary_file)
     return vectorizer
 
 
