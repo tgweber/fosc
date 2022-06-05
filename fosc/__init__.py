@@ -45,10 +45,11 @@ class FOSCEncoder(json.JSONEncoder):
             return obj.tolist()
         return super(FOSCEncoder, self).default(obj)
 
+IDF_FILENAME = "idf.npz"
 
 def dump_vectorizer_to_dir(vectorizer, path):
-    idf_file = os.path.join(path, "idf.csv")
-    np.savetxt(idf_file, vectorizer.idf_, delimiter=",")
+    idf_file = os.path.join(path, IDF_FILENAME)
+    np.savez_compressed(idf_file, vectorizer.idf_)
     vocabulary_file = os.path.join(path, "vocabulary.json")
     with open(vocabulary_file, "w") as fp:
         json.dump(vectorizer.vocabulary_, fp, cls=FOSCEncoder)
@@ -106,8 +107,8 @@ def load_vectorizer_from_dir(path):
                         )
        )
     vectorizer.set_params(**params)
-    idf_file = os.path.join(path, "idf.csv")
-    vectorizer.idf_ = np.loadtxt(idf_file)
+    idf_file = os.path.join(path, IDF_FILENAME)
+    vectorizer.idf_ = np.load(idf_file, allow_pickle=False)["arr_0"]
     vocabulary_file = os.path.join(path, "vocabulary.json")
     with open(vocabulary_file, "r") as fp:
         vectorizer.vocabulary_ = json.load(fp)
