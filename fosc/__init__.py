@@ -59,10 +59,29 @@ def dump_vectorizer_to_dir(vectorizer, path):
     # get non-default values:
     vectorizer_inspect = \
         inspect.getfullargspec(sklearn.feature_extraction.text.TfidfVectorizer)
-    for i, key in enumerate(vectorizer_inspect.args):
+    # inspect changed the output of getfullargsspec somewhere.
+    # We define the new output format as standard and try the old one
+    # if nothing can be found.
+    args_index = 4
+    default_index = 5
+    access_by_key = True
+    if len(vectorizer_inspect[args_index]) == 0:
+        args_index = 0
+        default_index = 3
+        access_by_key = False
+    for i, key in enumerate(vectorizer_inspect[args_index]):
         if  i == 0:
             continue
-        if vectorizer_inspect.defaults[i-1] != vectorizer.get_params()[key]:
+        if access_by_key:
+            default_value = vectorizer_inspect[default_index][key]
+        else:
+            default_value = vectorizer_inspect[default_index][i-1]
+        print("{}: {} (model) {} (default)".format(
+            key,
+            vectorizer.get_params()[key],
+            default_value
+        ))
+        if default_value != vectorizer.get_params()[key]:
             non_default_params[key] = vectorizer.get_params()[key]
     with open(params_file, "w") as fp:
         json.dump(non_default_params, fp, cls=FOSCEncoder)

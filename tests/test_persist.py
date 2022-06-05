@@ -36,3 +36,4 @@ def test_store_and_load_vectorizer(tmpdir):
         assert vectorizer.get_params()[key] == value
     for key, value in vectorizer.get_params().items():
         assert vectorizer_loaded.get_params()[key] == value
+    # TODO test differing version loading
