@@ -7,7 +7,9 @@
 #
 ################################################################################
 import numpy as np
+import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 
 from fosc import \
@@ -36,4 +38,13 @@ def test_store_and_load_vectorizer(tmpdir):
         assert vectorizer.get_params()[key] == value
     for key, value in vectorizer.get_params().items():
         assert vectorizer_loaded.get_params()[key] == value
-    # TODO test differing version loading
+
+def test_diff_version(caplog):
+    print(sklearn.__version__)
+    if sklearn.__version__ == "0.21.3":
+        assert True
+    else:
+        vectorizer_dir = "./tests/artefacts/0"
+        vectorizer_loaded = load_vectorizer_from_dir(vectorizer_dir)
+        assert caplog.records[-1].levelname == "WARNING"
+        assert "The version of sklearn" in  caplog.records[-1].msg
