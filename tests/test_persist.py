@@ -50,12 +50,16 @@ def test_store_and_load_selector(tmpdir):
      'Is this the first document?',
     ]
     vectorizer = TfidfVectorizer(stop_words=["This"], norm="l1")
-    x = vectorizer.fit_transform(corpus)
-    selector = SelectKBest(f_classif, k=4).fit(x, [1,2,1,2])
-    x = selector.transform(x).astype(np.float64)
+    x_all = vectorizer.fit_transform(corpus)
+    selector = SelectKBest(f_classif, k=4).fit(x_all, [1,2,1,2])
+    x = selector.transform(x_all).astype(np.float64)
     dump_dir = tmpdir.mkdir("test-persistence").realpath()
     dump_selector_to_dir(selector, dump_dir)
     selector_loaded = load_selector_from_dir(dump_dir)
+    x2 = selector_loaded.transform(x_all).astype(np.float64)
+    assert x.shape == x2.shape
+    assert x.dtype == x2.dtype
+    assert (x != x2).nnz == 0
 
 def test_diff_version(caplog):
     print(sklearn.__version__)

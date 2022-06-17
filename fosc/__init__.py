@@ -136,14 +136,15 @@ def dump_selector_to_dir(selector, path):
     params_with_non_default_values = get_params_with_non_default_values(
         selector
     )
+    params_with_non_default_values["k"] = selector.k
     params_file = os.path.join(path, PARAMS_FILENAME)
     dump_dict_to_compressed_json(params_with_non_default_values, params_file)
 
 
 def load_selector_from_dir(path):
-    selector = sklearn.feature_selection.SelectKBest()
     params_file = os.path.join(path, PARAMS_FILENAME)
     params = load_dict_from_compressed_json(params_file)
+    selector = sklearn.feature_selection.SelectKBest(k=params["k"])
     sklearn_version = params.pop("__sklearn_version__", "0")
     if sklearn_version != sklearn.__version__:
         logging.warning("The version of sklearn used to create the"
@@ -161,7 +162,7 @@ def load_selector_from_dir(path):
     scores_file = os.path.join(path, SCORES_FILENAME)
     selector.scores_ = np.load(scores_file, allow_pickle=False)["arr_0"]
     pvalues_file = os.path.join(path, PVALUE_FILENAME)
-    selector.pvalues_ = np.load(pvalues_file, allow_pickle=False)["arr_0"] 
+    selector.pvalues_ = np.load(pvalues_file, allow_pickle=False)["arr_0"]
     return selector
 
 def load_model(model_id):
