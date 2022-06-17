@@ -49,6 +49,8 @@ class FOSCEncoder(json.JSONEncoder):
 IDF_FILENAME = "idf.npz"
 VOCABULARY_FILENAME = "vocabulary.json.gz"
 PARAMS_FILENAME = "params.json.gz"
+PVALUE_FILENAME = "pvalues.npz"
+SCORES_FILENAME = "scores.npz"
 
 def dump_dict_to_compressed_json(d, path):
     payload = gzip.compress(json.dumps(d, cls=FOSCEncoder).encode("utf-8"))
@@ -126,6 +128,41 @@ def load_vectorizer_from_dir(path):
     vectorizer.vocabulary_ = load_dict_from_compressed_json(vocabulary_file)
     return vectorizer
 
+def dump_selector_to_dir(selector, path):
+    scores_file = os.path.join(path, SCORES_FILENAME)
+    np.savez_compressed(scores_file, selector.scores_)
+    pvalues_file = os.path.join(path, PVALUE_FILENAME)
+    np.savez_compressed(pvalues_file, selector.pvalues_)
+    params_with_non_default_values = get_params_with_non_default_values(
+        selector
+    )
+    params_file = os.path.join(path, PARAMS_FILENAME)
+    dump_dict_to_compressed_json(params_with_non_default_values, params_file)
+
+
+def load_selector_from_dir(path):
+    selector = sklearn.feature_selection.SelectKBest()
+    params_file = os.path.join(path, PARAMS_FILENAME)
+    params = load_dict_from_compressed_json(params_file)
+    sklearn_version = params.pop("__sklearn_version__", "0")
+    if sklearn_version != sklearn.__version__:
+        logging.warning("The version of sklearn used to create the"
+                        " loaded vectorizer {}"
+                        " is different from the"
+                        " currently used sklearn {}."
+                        " Please consult the documentations of both"
+                        " versions to determine breaking changes or"
+                        " differing default values".format(
+                            sklearn_version,
+                            sklearn.__version__
+                        )
+       )
+    selector.set_params(**params)
+    scores_file = os.path.join(path, SCORES_FILENAME)
+    selector.scores_ = np.load(scores_file, allow_pickle=False)["arr_0"]
+    pvalues_file = os.path.join(path, PVALUE_FILENAME)
+    selector.pvalues_ = np.load(pvalues_file, allow_pickle=False)["arr_0"] 
+    return selector
 
 def load_model(model_id):
     """ Loads the model. Downloads the model if not present on local drive
