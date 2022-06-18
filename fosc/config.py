@@ -1,25 +1,26 @@
-################################################################################
+###############################################################################
 # Copyright: Tobias Weber 2020
 #
 # Apache 2.0 License
 #
-# This file contains configurations related to the Field of Study Classification
+# This file contains configurations related to the
+# Field of Study Classification
 #
-################################################################################
+###############################################################################
 config = {
     "base_path": ".",
     "models": {
         "mlp_s": {
             "id": "mlp_s",
             "type": "mlp",
-            "url": "https://zenodo.org/record/3676490/files/mlp_s.tar.gz"
+            "url": "https://zenodo.org/record/6659729/files/mlp_s.tar.gz"
         },
         "mlp_m": {
             "id": "mlp_m",
             "type": "mlp",
             "url": "https://zenodo.org/record/3677337/files/mlp_m.tar.gz"
         },
-         "mlp_l": {
+        "mlp_l": {
             "id": "mlp_l",
             "type": "mlp",
             "url": "https://zenodo.org/record/3686547/files/mlp_l.tar.gz"
