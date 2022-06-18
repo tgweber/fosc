@@ -18,12 +18,12 @@ config = {
         "mlp_m": {
             "id": "mlp_m",
             "type": "mlp",
-            "url": "https://zenodo.org/record/3677337/files/mlp_m.tar.gz"
+            "url": "https://zenodo.org/record/6659758/files/mlp_m.tar.gz"
         },
         "mlp_l": {
             "id": "mlp_l",
             "type": "mlp",
-            "url": "https://zenodo.org/record/3686547/files/mlp_l.tar.gz"
+            "url": "https://zenodo.org/record/6659759/files/mlp_l.tar.gz"
         },
         "lstm_s": {
             "id": "lstm_s",
