@@ -1,11 +1,11 @@
-################################################################################
+###############################################################################
 # Copyright: Tobias Weber 2020
 #
 # Apache 2.0 License
 #
 # This file contains code related to the Field of Study Classification
 #
-################################################################################
+###############################################################################
 
 import gzip
 import inspect
@@ -19,7 +19,10 @@ import tarfile
 import urllib.request
 import warnings
 
-__version__ = "0.0.2"
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_selection import SelectKBest
+
+__version__ = "0.0.3"
 
 # We silence tensorflow output before we load it
 # https://stackoverflow.com/a/54950981
@@ -83,11 +86,6 @@ def get_params_with_non_default_values(obj):
             default_value = cls_inspect[default_index][key]
         else:
             default_value = cls_inspect[default_index][i-1]
-        print("{}: {} (model) {} (default)".format(
-            key,
-            obj.get_params()[key],
-            default_value
-        ))
         if default_value != obj.get_params()[key]:
             non_default_params[key] = obj.get_params()[key]
     return non_default_params
@@ -105,7 +103,7 @@ def dump_vectorizer_to_dir(vectorizer, path):
 
 
 def load_vectorizer_from_dir(path):
-    vectorizer = sklearn.feature_extraction.text.TfidfVectorizer()
+    vectorizer = TfidfVectorizer()
     params_file = os.path.join(path, PARAMS_FILENAME)
     params = load_dict_from_compressed_json(params_file)
     sklearn_version = params.pop("__sklearn_version__", "0")
@@ -144,11 +142,11 @@ def dump_selector_to_dir(selector, path):
 def load_selector_from_dir(path):
     params_file = os.path.join(path, PARAMS_FILENAME)
     params = load_dict_from_compressed_json(params_file)
-    selector = sklearn.feature_selection.SelectKBest(k=params["k"])
+    selector = SelectKBest(k=params["k"])
     sklearn_version = params.pop("__sklearn_version__", "0")
     if sklearn_version != sklearn.__version__:
         logging.warning("The version of sklearn used to create the"
-                        " loaded vectorizer {}"
+                        " loaded selector {}"
                         " is different from the"
                         " currently used sklearn {}."
                         " Please consult the documentations of both"
@@ -252,6 +250,9 @@ def get_vectorizer(model_id):
     """
     _download(model_id)
     if config["models"][model_id]["type"] == "mlp":
+        vectorizer_dir = os.path.join(config["base_path"], model_id, "vectorizer")
+        if os.path.isdir(vectorizer_dir):
+            return load_vectorizer_from_dir(vectorizer_dir)
         with open(os.path.join(config["base_path"], model_id, "vectorizer.bin"), "rb") as f:
             return pickle.load(f)
     else:
@@ -272,6 +273,9 @@ def get_selector(model_id):
     """
     _download(model_id)
     if config["models"][model_id]["type"] == "mlp":
+        selector_dir = os.path.join(config["base_path"], model_id, "selector")
+        if os.path.isdir(selector_dir):
+            return load_selector_from_dir(selector_dir)
         with open(os.path.join(config["base_path"], model_id, "selector.bin"), "rb") as f:
             return pickle.load(f)
     else:
