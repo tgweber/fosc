@@ -28,19 +28,19 @@ config = {
         "lstm_s": {
             "id": "lstm_s",
             "type": "lstm",
-            "url": "https://zenodo.org/record/6665228/files/lstm_s.tar.gz",
+            "url": "https://zenodo.org/record/6667528/files/lstm_s.tar.gz",
             "maxlen": 500
         },
         "lstm_m": {
             "id": "lstm_m",
             "type": "lstm",
-            "url": "https://zenodo.org/record/6665229/files/lstm_m.tar.gz",
+            "url": "https://zenodo.org/record/6667529/files/lstm_m.tar.gz",
             "maxlen": 1000
         },
         "lstm_l": {
             "id": "lstm_l",
             "type": "lstm",
-            "url": "https://zenodo.org/record/6665230/files/lstm_l.tar.gz",
+            "url": "https://zenodo.org/record/6667530/files/lstm_l.tar.gz",
             "maxlen": 2000
         }
     },
