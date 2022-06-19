@@ -25,7 +25,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest
 
 # CONSTANTS
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 IDF_FILENAME = "idf.npz"
 VOCABULARY_FILENAME = "vocabulary.json.gz"
