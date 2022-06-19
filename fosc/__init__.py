@@ -24,8 +24,15 @@ from keras.preprocessing.text import tokenizer_from_json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest
 
-
+# CONSTANTS
 __version__ = "0.0.3"
+
+IDF_FILENAME = "idf.npz"
+VOCABULARY_FILENAME = "vocabulary.json.gz"
+PARAMS_FILENAME = "params.json.gz"
+PVALUE_FILENAME = "pvalues.npz"
+SCORES_FILENAME = "scores.npz"
+TOKENIZER_FILENAME = "tokenizer.json.gz"
 
 
 # We silence tensorflow output before we load it
@@ -43,6 +50,7 @@ with warnings.catch_warnings():
     from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
+# Ad hoc class to JSON-serialize a dict
 class FOSCEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -54,26 +62,51 @@ class FOSCEncoder(json.JSONEncoder):
         return super(FOSCEncoder, self).default(obj)
 
 
-IDF_FILENAME = "idf.npz"
-VOCABULARY_FILENAME = "vocabulary.json.gz"
-PARAMS_FILENAME = "params.json.gz"
-PVALUE_FILENAME = "pvalues.npz"
-SCORES_FILENAME = "scores.npz"
-TOKENIZER_FILENAME = "tokenizer.json"
-
-
 def dump_dict_to_compressed_json(d, path):
+    """ Dumps dict to gzipped json file
+
+    Arguments
+    ---------
+    d: dict
+        Dictionary to be dumped
+    path: str
+        Path to the gzipped json file
+    """
     payload = gzip.compress(json.dumps(d, cls=FOSCEncoder).encode("utf-8"))
     with open(path, "wb") as fp:
         fp.write(payload)
 
 
 def load_dict_from_compressed_json(path):
+    """ Loads gzipped json and converts it to dict
+
+    Arguments
+    ---------
+    path: str
+        Path to the gzipped json file
+
+    Returns
+    -------
+    dict
+    """
     with gzip.open(path) as fp:
         return json.loads(fp.read().decode("utf-8"))
 
 
 def get_params_with_non_default_values(obj):
+    """ Gets the parameter of an object that are set to a non-default value.
+
+        It also contains the sklearn version.
+
+    Arguments
+    ---------
+    obj: obj
+        A sklearn object
+
+    Returns
+    -------
+    dict
+    """
     non_default_params = {
         "__sklearn_version__": sklearn.__version__
     }
@@ -101,6 +134,20 @@ def get_params_with_non_default_values(obj):
 
 
 def dump_vectorizer_to_dir(vectorizer, path):
+    """ Dumps a vectorizer to a directory.
+
+        The directory will contain the following files:
+            * A file with the vectorizers' parameters: PARAMS_FILENAME
+            * A file with the vectorizers' idfs: IDF_FILENAME
+            * A file with the vectorizers' vocabulary: VOCABULARY_FILENAME
+
+    Arguments
+    ---------
+    vectorizer: sklearn.feature_extraction.text.TfidfVectorizer
+        The vectorizer to be dumped
+    path: str
+        Path to the directory containing the files
+    """
     idf_file = os.path.join(path, IDF_FILENAME)
     np.savez_compressed(idf_file, vectorizer.idf_)
     vocabulary_file = os.path.join(path, VOCABULARY_FILENAME)
@@ -113,6 +160,22 @@ def dump_vectorizer_to_dir(vectorizer, path):
 
 
 def load_vectorizer_from_dir(path):
+    """ Loads vectorizer from directory.
+
+        The directory has to contain:
+            * A file with the vectorizers' parameters: PARAMS_FILENAME
+            * A file with the vectorizers' idfs: IDF_FILENAME
+            * A file with the vectorizers' vocabulary: VOCABULARY_FILENAME
+
+    Arguments
+    ---------
+    path: str
+        Path to the directory containing the files
+
+    Returns
+    -------
+    sklearn.feature_extraction.text.TfidfVectorizer
+    """
     vectorizer = TfidfVectorizer()
     params_file = os.path.join(path, PARAMS_FILENAME)
     params = load_dict_from_compressed_json(params_file)
@@ -138,6 +201,20 @@ def load_vectorizer_from_dir(path):
 
 
 def dump_selector_to_dir(selector, path):
+    """ Dumps a selector to a directory.
+
+        The directory will contain the following files:
+            * A file with the selectors' parameters called PARAMS_FILENAME
+            * A file with the selectors' scores called SCORES_FILENAME
+            * A file with the selectors' pvalues called PVALUE_FILENAME
+
+    Arguments
+    ---------
+    selector: sklearn.feature_selection.SelectKBest
+        The selector to be dumped
+    path: str
+        Path to the directory containing the files
+    """
     scores_file = os.path.join(path, SCORES_FILENAME)
     np.savez_compressed(scores_file, selector.scores_)
     pvalues_file = os.path.join(path, PVALUE_FILENAME)
@@ -151,6 +228,22 @@ def dump_selector_to_dir(selector, path):
 
 
 def load_selector_from_dir(path):
+    """ Loads a selector from directory.
+
+        The directory has to contain:
+            * A file with the selectors' parameters called PARAMS_FILENAME
+            * A file with the selectors' scores called SCORES_FILENAME
+            * A file with the selectors' pvalues called PVALUE_FILENAME
+
+    Arguments
+    ---------
+    path: str
+        Path to the directory containing the files
+
+    Returns
+    -------
+    sklearn.feature_selection.SelectKBest
+    """
     params_file = os.path.join(path, PARAMS_FILENAME)
     params = load_dict_from_compressed_json(params_file)
     selector = SelectKBest(k=params["k"])
@@ -176,6 +269,18 @@ def load_selector_from_dir(path):
 
 
 def dump_tokenizer_to_dir(tokenizer, path):
+    """ Dumps a tokenizer to a directory.
+
+        The directory will contain a gzipped, json-encoded version of the
+        tokenizer. The file name is TOKENIZER_FILENAME.
+
+    Arguments
+    ---------
+    tokenizer: keras.preprocessing.text.Tokenizer
+        The tokenizer to be dumped
+    path: str
+        Path to the directory containing the file (called TOKENIZER_FILENAME)
+    """
     tokenizer_file = os.path.join(path, TOKENIZER_FILENAME)
     payload = gzip.compress(json.dumps(tokenizer.to_json()).encode("utf-8"))
     with open(tokenizer_file, "wb") as fp:
@@ -183,6 +288,20 @@ def dump_tokenizer_to_dir(tokenizer, path):
 
 
 def load_tokenizer_from_dir(path):
+    """ Loads a tokenizer from directory.
+
+        The directory has to contain a gzipped, json-encoded version of the
+        tokenizer. The file name is TOKENIZER_FILENAME.
+
+    Arguments
+    ---------
+    path: str
+        Path to the directory containing the file (called TOKENIZER_FILENAME)
+
+    Returns
+    -------
+    keras.preprocessing.text.Tokenizer
+    """
     tokenizer_file = os.path.join(path, TOKENIZER_FILENAME)
     with gzip.open(tokenizer_file) as fp:
         return tokenizer_from_json(json.loads(fp.read().decode("utf-8")))
@@ -217,7 +336,7 @@ def load_model(model_id):
 
 def vectorize(payload, model_id):
     """ Vectorizes texts for usage with the specified model
-        Downloads model and serialized python code, if not present local.
+        Downloads model and necessary data, if not present local.
 
     Arguments
     ---------
@@ -228,7 +347,7 @@ def vectorize(payload, model_id):
         Consult README.md for details on the models
     Returns
     -------
-    something (TBA)
+    An array-like structure that can be used on a model
     """
     _download(model_id)
     with warnings.catch_warnings():
@@ -240,7 +359,6 @@ def vectorize(payload, model_id):
                 vectorizer.transform(payload)).astype(float).sorted_indices()
         elif config["models"][model_id]["type"] == "lstm":
             tokenizer = get_tokenizer(model_id)
-            # emb_matrix = get_emb_matrix(model_id)
             return pad_sequences(
                 tokenizer.texts_to_sequences(payload),
                 maxlen=config["models"][model_id]["maxlen"]
@@ -248,7 +366,7 @@ def vectorize(payload, model_id):
 
 
 def _download(model_id):
-    """ Downloads model, weights and vectorization objects
+    """ Downloads model, weights and vectorization data
 
     Argument
     --------
@@ -272,9 +390,9 @@ def _download(model_id):
 def get_vectorizer(model_id):
     """ Returns the vectorizer object for the given model_id
 
-    This function is meant for large classification runs, when the payloads are
-    chunked into batches (vectorize()) always loads vectorizer from disk and is
-    therefore slow when iteratively called.
+    This function is meant for classification loops, when the payloads are
+    chunked into batches (vectorize()) always loads vectorizer from disk on
+    each call and is therefore slow when called iteratively.
 
     Argument
     --------
@@ -299,9 +417,9 @@ def get_vectorizer(model_id):
 def get_selector(model_id):
     """ Returns the selector object for the given model_id
 
-    This function is meant for large classification runs, when the payloads are
-    chunked into batches (vectorize()) always loads selector from disk and is
-    therefore slow when iteratively called.
+    This function is meant for classification loops, when the payloads are
+    chunked into batches (vectorize()) always loads selector from disk on
+    each call and is therefore slow when called iteratively.
 
     Argument
     --------
@@ -325,9 +443,9 @@ def get_selector(model_id):
 def get_tokenizer(model_id):
     """ Returns the tokenizer object for the given model_id
 
-    This function is meant for large classification runs, when the payloads are
-    chunked into batches (vectorize()) always loads tokenizer from disk and is
-    therefore slow when iteratively called.
+    This function is meant for classification loops, when the payloads are
+    chunked into batches (vectorize()) always loads selector from disk on
+    each call and is therefore slow when called iteratively.
 
     Argument
     --------
@@ -347,25 +465,3 @@ def get_tokenizer(model_id):
             return pickle.load(f)
     else:
         raise ValueError("{} has no tokenizer".format(model_id))
-
-
-def get_emb_matrix(model_id):
-    """ Returns the emb_matrix object for the given model_id
-
-    This function is meant for large classification runs, when the payloads are
-    chunked into batches (vectorize()) always loads emb_matrix from disk and is
-    therefore slow when iteratively called.
-
-    Argument
-    --------
-    model_id: str
-        One of lstm_s, lstm_m, lstm_m
-        Consult README.md for details on the models
-    """
-    _download(model_id)
-    if config["models"][model_id]["type"] == "lstm":
-        emb_file = os.path.join(
-            config["base_path"], model_id, "emb_matrix.npy")
-        return np.load(emb_file)
-    else:
-        raise ValueError("{} has no emb_matrix".format(model_id))
