@@ -8,19 +8,19 @@ with open('LICENSE') as f:
 
 setup(
     name='fosc',
-    version='0.0.2',
-    descripion='Field Of Study Classifier (FOSC)',
+    version='0.0.3',
+    description='Field Of Study Classifier (FOSC)',
     long_description=readme,
     author='Tobias Weber',
     author_email='mail@tgweber.de',
-    url='https://github.com/tgweber/fospred',
+    url='https://github.com/tgweber/fosc',
     license=license,
     packages=find_packages(exclude=('tests')),
     install_requires=[
-        "tensorflow==2.8.1",
+        "tensorflow",
         "keras",
         "numpy",
         "pandas",
-        "scikit-learn==0.21.3"
+        "scikit-learn"
     ]
 )
