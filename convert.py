@@ -14,8 +14,10 @@ import os
 
 from fosc import \
         dump_selector_to_dir,\
+        dump_tokenizer_to_dir,\
         dump_vectorizer_to_dir,\
         get_selector,\
+        get_tokenizer,\
         get_vectorizer
 
 from fosc.config import config
@@ -49,3 +51,18 @@ for model_id in ["mlp_s", "mlp_m", "mlp_l"]:
     else:
         os.makedirs(dump_selector_dir)
         dump_selector_to_dir(selector, dump_selector_dir)
+
+for model_id in ["lstm_s", "lstm_m", "lstm_l"]:
+    logging.info("Handling {}".format(model_id))
+    tokenizer = get_tokenizer(model_id)
+    dump_tokenizer_dir = os.path.join(
+        config["base_path"],
+        model_id,
+        "tokenizer"
+    )
+    if os.path.isdir(dump_tokenizer_dir):
+        logging.info("{} already converted, doing nothing".format(model_id))
+        continue
+    else:
+        os.makedirs(dump_tokenizer_dir)
+        dump_tokenizer_to_dir(tokenizer, dump_tokenizer_dir)

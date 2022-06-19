@@ -19,9 +19,11 @@ import tarfile
 import urllib.request
 import warnings
 
+from fosc.config import config
+from keras.preprocessing.text import tokenizer_from_json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest
-from fosc.config import config
+
 
 __version__ = "0.0.3"
 
@@ -57,6 +59,7 @@ VOCABULARY_FILENAME = "vocabulary.json.gz"
 PARAMS_FILENAME = "params.json.gz"
 PVALUE_FILENAME = "pvalues.npz"
 SCORES_FILENAME = "scores.npz"
+TOKENIZER_FILENAME = "tokenizer.json"
 
 
 def dump_dict_to_compressed_json(d, path):
@@ -170,6 +173,19 @@ def load_selector_from_dir(path):
     pvalues_file = os.path.join(path, PVALUE_FILENAME)
     selector.pvalues_ = np.load(pvalues_file, allow_pickle=False)["arr_0"]
     return selector
+
+
+def dump_tokenizer_to_dir(tokenizer, path):
+    tokenizer_file = os.path.join(path, TOKENIZER_FILENAME)
+    payload = gzip.compress(json.dumps(tokenizer.to_json()).encode("utf-8"))
+    with open(tokenizer_file, "wb") as fp:
+        fp.write(payload)
+
+
+def load_tokenizer_from_dir(path):
+    tokenizer_file = os.path.join(path, TOKENIZER_FILENAME)
+    with gzip.open(tokenizer_file) as fp:
+        return tokenizer_from_json(json.loads(fp.read().decode("utf-8")))
 
 
 def load_model(model_id):
@@ -323,6 +339,10 @@ def get_tokenizer(model_id):
     tokenizer_bin = os.path.join(
         config["base_path"], model_id, "tokenizer.bin")
     if config["models"][model_id]["type"] == "lstm":
+        tokenizer_dir = os.path.join(
+            config["base_path"], model_id, "tokenizer")
+        if os.path.isdir(tokenizer_dir):
+            return load_tokenizer_from_dir(tokenizer_dir)
         with open(tokenizer_bin, "rb") as f:
             return pickle.load(f)
     else:
