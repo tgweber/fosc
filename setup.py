@@ -8,7 +8,7 @@ with open('LICENSE') as f:
 
 setup(
     name='fosc',
-    version='0.0.3',
+    version='0.0.4',
     description='Field Of Study Classifier (FOSC)',
     long_description=readme,
     author='Tobias Weber',
