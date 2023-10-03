@@ -73,7 +73,7 @@ tf-estimator-nightly==2.8.0.dev2021122109
 tomli==2.0.0
 traitlets==5.1.1
 typing-extensions==4.0.1
-urllib3==1.26.8
+urllib3==1.26.17
 wcwidth==0.2.5
 Werkzeug==2.2.3
 wrapt==1.13.3
